@@ -10,9 +10,17 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+/**
+ * A small Java application using the Swing library, for drawing heat maps from mouse positions over time.
+ * 
+ * @author Filip Östermark
+ * @version 2013-05-10
+ */
 public class MLog extends JFrame{
 
 	private static MouseLogger mouseLogger;
+	private static final long STANDARD_MOUSE_LOGGER_SLEEP_TIME = 1000L;
+	private static final String WINDOWS_LOOK_AND_FEEL = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
 
 	/**
 	 * Creates the main window and runs the program.
@@ -25,7 +33,7 @@ public class MLog extends JFrame{
 				window.setResizable(true);
 			}
 		});
-		mouseLogger = new MouseLogger();
+		mouseLogger = new MouseLogger(STANDARD_MOUSE_LOGGER_SLEEP_TIME);
 		mouseLogger.run();
 	}
 
@@ -36,8 +44,13 @@ public class MLog extends JFrame{
 		initUI();
 	}
 
+	/**
+	 * Draws a heat map of mouse pointer positions over time.
+	 * 
+	 * @param pixelMap	A HashMap of mouse pointer positions over time
+	 */
 	public void drawMap(HashMap<PixelPoint, Integer> pixelMap) {
-
+		// TODO: Add implementation
 	}
 
 	/**
@@ -45,7 +58,7 @@ public class MLog extends JFrame{
 	 */
 	private void setNativeLookAndFeel() {
 		try {
-			if (UIManager.getSystemLookAndFeelClassName().equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")) {
+			if (UIManager.getSystemLookAndFeelClassName().equals(WINDOWS_LOOK_AND_FEEL)) {
 				// Set cross-platform Java L&F (also called "Metal")
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			}
