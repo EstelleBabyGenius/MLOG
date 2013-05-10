@@ -11,7 +11,7 @@ import java.util.Set;
  * Uses a HashMap of PixelPoints and Integers to log mouse pointer positions over time.
  * 
  * @author Filip Östermark
- * @version 2013-05-11
+ * @version 2013-05-10
  */
 public class MouseLogger implements Runnable {
 

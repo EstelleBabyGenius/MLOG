@@ -5,7 +5,7 @@ import java.awt.Point;
 /**
  * 
  * @author Filip Östermark
- * @version 2013-05-11
+ * @version 2013-05-10
  */
 public class PixelPoint extends Point {
 	
