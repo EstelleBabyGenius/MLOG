@@ -5,7 +5,7 @@ import java.awt.Point;
 /**
  * 
  * @author Filip Östermark
- * @version 2013-05-10
+ * @version 2013-05-11
  */
 public class PixelPoint extends Point {
 	
@@ -16,7 +16,7 @@ public class PixelPoint extends Point {
 	 * @param y	The y coordinate of the PixelPoint
 	 */
 	public PixelPoint(int x, int y) {
-		this.setLocation(x, y);
+		super(x, y);
 	}
 	
 	/**

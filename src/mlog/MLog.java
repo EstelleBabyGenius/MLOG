@@ -14,7 +14,7 @@ import javax.swing.UIManager;
  * A small Java application using the Swing library, for drawing heat maps from mouse positions over time.
  * 
  * @author Filip Östermark
- * @version 2013-05-10
+ * @version 2013-05-11
  */
 public class MLog extends JFrame{
 
@@ -49,7 +49,7 @@ public class MLog extends JFrame{
 	 * 
 	 * @param pixelMap	A HashMap of mouse pointer positions over time
 	 */
-	public void drawMap(HashMap<PixelPoint, Integer> pixelMap) {
+	private void drawMap(HashMap<PixelPoint, Integer> pixelMap) {
 		// TODO: Add implementation
 	}
 
