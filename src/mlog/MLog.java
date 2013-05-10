@@ -15,7 +15,9 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -28,8 +30,13 @@ import javax.swing.UIManager;
 public class MLog extends JFrame{
 
 	private static MouseLogger mouseLogger;
-	private static final long STANDARD_MOUSE_LOGGER_SLEEP_TIME = 500L;
+	private static final long STANDARD_MOUSE_LOGGER_SLEEP_TIME = 1000L;
 	private static final String WINDOWS_LOOK_AND_FEEL = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+	private static final String RUNNING_LABEL = "RUNNING";
+	private static final String NOT_RUNNING_LABEL = "NOT RUNNING";
+	private static JButton generateMapButton;
+	private static JLabel runningIndicatorLabel;
+	private static JLabel totalRuntimeLabel;
 
 	/**
 	 * Creates the main window and runs the program.
@@ -37,9 +44,7 @@ public class MLog extends JFrame{
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				MLog window = new MLog();
-				window.setVisible(true);
-				window.setResizable(true);
+				new MLog();
 			}
 		});
 		mouseLogger = new MouseLogger(STANDARD_MOUSE_LOGGER_SLEEP_TIME);
@@ -58,7 +63,7 @@ public class MLog extends JFrame{
 	 * 
 	 * @param pixelMap	A HashMap of mouse pointer positions over time
 	 */
-	private void drawMap(HashMap<PixelPoint, Integer> pixelMap) {
+	private void generateMap(HashMap<PixelPoint, Integer> pixelMap) {
 		Dimension screenResolution = this.getScreenResolution();
 		int screenWidth = (int)screenResolution.getWidth();
 		int screenHeight = (int)screenResolution.getHeight();
@@ -71,7 +76,7 @@ public class MLog extends JFrame{
 		synchronized(pixelMap) {
 			for (PixelPoint pixel : pixelMap.keySet()) {
 				for (int i = pixelMap.get(pixel); i > 0; i--) {
-					int radius = i*5;
+					int radius = i;
 					int alpha = 255/i;
 					System.out.println(alpha);
 					pixelTimeMapImage.setColor(new Color(255, 0, 0, alpha));
@@ -80,7 +85,7 @@ public class MLog extends JFrame{
 			}
 		}
 		try {
-			ImageIO.write(pixelTimeMapBuffer, "png",new File("C:\\Users\\Filip\\Desktop\\out2.png"));
+			ImageIO.write(pixelTimeMapBuffer, "png",new File("C:\\Users\\Filip\\Desktop\\HeatMap.png"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -114,7 +119,10 @@ public class MLog extends JFrame{
 	 */
 	private void initUI() {
 		this.setTitle("MLOG");
-		this.setSize(800, 600);
+		this.setSize(220, 300);
+		this.setVisible(true);
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setNativeLookAndFeel();
 
@@ -122,8 +130,21 @@ public class MLog extends JFrame{
 		panel.setLayout(null);
 		getContentPane().add(panel);
 
+		JButton startButton = new JButton("START");
+		startButton.setBounds(50, 30, 110, 30);
+		startButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				mouseLogger.start();
+				if (mouseLogger.isRunning()) {
+					runningIndicatorLabel.setText(RUNNING_LABEL);
+					generateMapButton.setEnabled(false);
+				}
+			}
+		});
+		panel.add(startButton);
+
 		JButton pauseButton = new JButton("PAUSE");
-		pauseButton.setBounds(50, 60, 80, 30);
+		pauseButton.setBounds(50, 70, 110, 30);
 		pauseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
@@ -132,21 +153,25 @@ public class MLog extends JFrame{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				if (!mouseLogger.isRunning()) {
+					runningIndicatorLabel.setText(NOT_RUNNING_LABEL);
+					generateMapButton.setEnabled(true);
+				}
 			}
 		});
 		panel.add(pauseButton);
 
-		JButton startButton = new JButton("START");
-		startButton.setBounds(200, 60, 80, 30);
-		startButton.addActionListener(new ActionListener() {
+		generateMapButton = new JButton("GENERATE MAP");
+		generateMapButton.setBounds(50, 110, 110, 30);
+		generateMapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				mouseLogger.start();
+				generateMap(mouseLogger.getPixelTimeLog());
 			}
 		});
-		panel.add(startButton);
+		panel.add(generateMapButton);
 
 		JButton printLogButton = new JButton("PRINT");
-		printLogButton.setBounds(400, 60, 80, 30);
+		printLogButton.setBounds(50, 150, 110, 30);
 		printLogButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				mouseLogger.printLog();
@@ -154,13 +179,14 @@ public class MLog extends JFrame{
 		});
 		panel.add(printLogButton);
 
-		JButton drawButton = new JButton("DRAW");
-		drawButton.setBounds(200, 150, 80, 30);
-		drawButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				drawMap(mouseLogger.getPixelTimeLog());
-			}
-		});
-		panel.add(drawButton);
+		runningIndicatorLabel = new JLabel(NOT_RUNNING_LABEL);
+		runningIndicatorLabel.setBounds(0, 200, this.getWidth(), 30);
+		runningIndicatorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(runningIndicatorLabel);
+
+		totalRuntimeLabel = new JLabel("TOTAL RUNTIME: 00:00:00");
+		totalRuntimeLabel.setBounds(0, 220, this.getWidth(), 30);
+		totalRuntimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(totalRuntimeLabel);
 	}
 }

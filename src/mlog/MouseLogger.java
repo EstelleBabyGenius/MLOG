@@ -19,6 +19,7 @@ public class MouseLogger implements Runnable {
 	private PointerInfo pointer;
 	private HashMap<PixelPoint, Integer> pixelTimeLog;
 	private volatile boolean running;
+	private volatile int totalRuntime;
 
 	private final boolean DEBUG = true;
 
@@ -28,8 +29,13 @@ public class MouseLogger implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			while (!running) {
+			while (!this.running) {
 				Thread.yield();
+				try {
+					Thread.sleep(this.sleepTimeMillis);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+				}
 			}
 			this.pointer = MouseInfo.getPointerInfo();
 			PixelPoint currentPointerLocation = new PixelPoint(this.pointer.getLocation());
@@ -46,6 +52,8 @@ public class MouseLogger implements Runnable {
 			} catch (InterruptedException ie) {
 				// TODO: Catch exception
 			}
+			
+			this.totalRuntime++;
 		}
 	}
 
@@ -77,6 +85,22 @@ public class MouseLogger implements Runnable {
 		this.running = false;
 	}
 
+	/**
+	 * TODO
+	 * @return
+	 */
+	public boolean isRunning() {
+		return this.running;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public int getTotalRuntime() {
+		return this.totalRuntime;
+	}
+	
 	/**
 	 * Prints the current log of mouse pointer positions on the standard output stream.
 	 * 
