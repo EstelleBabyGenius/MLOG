@@ -21,7 +21,7 @@ public class MouseLogger implements Runnable {
 	private volatile boolean running;
 	private volatile int totalRuntime;
 
-	private final boolean DEBUG = true;
+	private final boolean DEBUG = false;
 
 	/**
 	 * Logs the mouse pointer position.
