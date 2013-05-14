@@ -13,14 +13,24 @@ import javax.imageio.ImageIO;
 /**
  * TODO
  * @author Filip Östermark
- * @version 2013-05-10
+ * @version 2013-05-14
  */
 public class MapGenerator {
+	
+	public final static String MAP_TYPE_DOTMAP = "DOTMAP";
 	
 	/**
 	 * TODO
 	 */
 	public MapGenerator() { }
+	
+	public void generateMap(Dimension resolution, HashMap<PixelPoint, Integer> pixelMap, File file, String mapType) {
+		if (mapType.equals(MAP_TYPE_DOTMAP)) {
+			this.generateDotMap(resolution, pixelMap, file);
+		} else {
+			System.out.println("INVALID MAP TYPE!");
+		}
+	}
 	
 	/**
 	 * Generates a dot map of mouse pointer positions over time.
