@@ -1,12 +1,14 @@
 package mlog;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,35 +28,39 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /**
  * A small Java application using the Swing library, for drawing heat maps from mouse positions over time.
  * 
- * TODO: The timer needs fixing.
+ * TODO: The timer needs some fixing.
  * 
  * @author Filip Östermark
- * @version 2013-05-14
+ * @version 2013-05-16
  */
 public class MLog extends JFrame{
 
 	private static final long serialVersionUID = 7865377280283371025L;
-	private static MLog mainWindow;
 	private static volatile int secondsRun, minutesRun, hoursRun;
 	private static MouseLogger mouseLogger;
 	private static MapGenerator mapGenerator;
+	private static Color mapColor;
 	private static Timer timer;
 	private static HashMap<Integer, String> mapTypeIndices;
 	private static final int INITIAL_WINDOW_WIDTH = 220;
 	private static final int INITIAL_WINDOW_HEIGHT = 300;
+	private static final int EXPANDED_WINDOW_WIDTH = INITIAL_WINDOW_WIDTH + 260;
 	private static final long STANDARD_MOUSE_LOGGER_SLEEP_TIME = 1000L;
 	private static final String WINDOWS_LOOK_AND_FEEL = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
 	private static final String RUNNING_LABEL = "RUNNING";
 	private static final String NOT_RUNNING_LABEL = "NOT RUNNING";
+	private static final Color STANDARD_MAP_COLOR = Color.GREEN;
 	private static JButton startButton;
 	private static JButton pauseButton;
 	private static JButton generateMapButton;
 	private static JButton doneButton;
 	private static JButton backButton;
 	private static JComboBox mapTypeDropDown;
+	private static ColorPickerPanel colorPickerPanel;
 	private static JLabel mapTypeLabel;
 	private static JLabel runningIndicatorLabel;
 	private static JLabel totalRuntimeLabel;
+	private static JLabel mapElementColorLabel;
 
 	/**
 	 * Creates the main window and runs the program.
@@ -62,7 +68,7 @@ public class MLog extends JFrame{
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				mainWindow = new MLog();
+				new MLog();
 			}
 		});
 		ExecutorService executor = Executors.newCachedThreadPool();
@@ -77,7 +83,8 @@ public class MLog extends JFrame{
 	public MLog() {
 		mapTypeIndices = new HashMap<Integer, String>();
 		mapTypeIndices.put(0, MapGenerator.MAP_TYPE_DOTMAP);
-		
+		mapColor = STANDARD_MAP_COLOR;
+
 		initUI();
 		initTimer();
 	}
@@ -95,22 +102,37 @@ public class MLog extends JFrame{
 	private void setNativeLookAndFeel() {
 		try {
 			if (UIManager.getSystemLookAndFeelClassName().equals(WINDOWS_LOOK_AND_FEEL)) {
-				// Set cross-platform Java L&F (also called "Metal")
+				// Set Windows look and feel
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			}
 		} catch (Exception e) { 
-			// TODO
+			e.printStackTrace();
+			System.err.println("The look and feel could not be set; leaving it at the default setting.");
 		}
 	}
 
 	/**
-	 * TODO
+	 * Shows or hides the settings for map generation.
 	 * 
 	 * @param panel	The JPanel to expand or shrink
-	 * @param show	Expand if true, shrink if not
+	 * @param show	Show if true, hide if not
 	 */
 	private void setMapSettingsVisible(boolean show) {
-		for (int i = 0; i < 7; i++) {
+		if (show) {
+			this.setSize(EXPANDED_WINDOW_WIDTH, this.getHeight());
+			startButton.setEnabled(false);
+		} else {
+			this.setSize(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+			startButton.setEnabled(true);
+		}
+
+		/* Some old code for animated expansion of the window.
+		 * It is not currently used because it causes the settings
+		 * part of the window is fully expanded, which arguably does
+		 * not look good. This code (if updated) will be used if this
+		 * problem is fixed.
+		 * 
+		 * for (int i = 0; i < 7; i++) {
 			if (show) {
 				this.setSize((int)(this.getWidth() + Math.pow(i, 2) + 2), this.getHeight());
 			} else {
@@ -137,8 +159,9 @@ public class MLog extends JFrame{
 				e.printStackTrace();
 			}
 		}
+		 */
 
-		runningIndicatorLabel.setText(Integer.toString(this.getWidth()));
+
 	}
 
 	/**
@@ -180,6 +203,11 @@ public class MLog extends JFrame{
 	 * Initializes the GUI.
 	 */
 	private void initUI() {
+
+		/******************************
+		 *### MAIN MENU COMPONENTS ###*
+		 ******************************/
+
 		this.setTitle("MLOG");
 		this.setSize(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 		this.setVisible(true);
@@ -205,6 +233,7 @@ public class MLog extends JFrame{
 		panel.setLayout(null);
 		getContentPane().add(panel);
 
+		// The button that starts the logging of mouse coordinates
 		startButton = new JButton("START");
 		startButton.setBounds(50, 30, 110, 30);
 		startButton.addActionListener(new ActionListener() {
@@ -222,6 +251,7 @@ public class MLog extends JFrame{
 		});
 		panel.add(startButton);
 
+		// The button that pauses the logging of mouse coordinates
 		pauseButton = new JButton("PAUSE");
 		pauseButton.setBounds(50, 70, 110, 30);
 		pauseButton.setEnabled(false);
@@ -245,6 +275,7 @@ public class MLog extends JFrame{
 		});
 		panel.add(pauseButton);
 
+		// The button that shows the menu for generating maps
 		generateMapButton = new JButton("GENERATE MAP");
 		generateMapButton.setBounds(50, 110, 110, 30);
 		generateMapButton.addActionListener(new ActionListener() {
@@ -255,48 +286,7 @@ public class MLog extends JFrame{
 		});
 		panel.add(generateMapButton);
 
-		mapTypeLabel = new JLabel("MAP TYPE:");
-		mapTypeLabel.setBounds(240, 5, 215, 30);
-		panel.add(mapTypeLabel);
-
-		mapTypeDropDown = new JComboBox();
-		for (int i = 0; i < mapTypeIndices.size(); i++) {
-			mapTypeDropDown.addItem(mapTypeIndices.get(i));
-		}
-		mapTypeDropDown.setBounds(240, 30, 215, 30);
-		panel.add(mapTypeDropDown);
-
-		doneButton = new JButton("SAVE");
-		doneButton.setBounds(300, 225, 110, 30);
-		doneButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				JFileChooser chooser = new JFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG", "png");
-				chooser.setFileFilter(filter);
-				int returnVal = chooser.showSaveDialog(mainWindow);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					switch (mapTypeDropDown.getSelectedIndex()) {
-					case 0:
-						mapGenerator.generateMap(getScreenResolution(), mouseLogger.getPixelTimeLog(), new File(chooser.getSelectedFile().getAbsolutePath() + ".png"), mapTypeIndices.get(0));
-						break;
-					default:
-						break;
-					}
-				}
-			}
-		});
-		panel.add(doneButton);
-
-		backButton = new JButton("<");
-		backButton.setBounds(240, 225, 50, 30);
-		backButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				setMapSettingsVisible(false);
-				generateMapButton.setEnabled(true);
-			}
-		});
-		panel.add(backButton);
-
+		// A temporary button for debugging; prints all the logged coordinates on the standard output stream
 		JButton printLogButton = new JButton("PRINT");
 		printLogButton.setBounds(50, 150, 110, 30);
 		printLogButton.addActionListener(new ActionListener() {
@@ -306,15 +296,84 @@ public class MLog extends JFrame{
 		});
 		panel.add(printLogButton);
 
+		// A label to indicate whether or the mouse is being logged
 		runningIndicatorLabel = new JLabel(NOT_RUNNING_LABEL);
 		runningIndicatorLabel.setBounds(0, 200, this.getWidth(), 30);
 		runningIndicatorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		runningIndicatorLabel.setForeground(Color.RED);
 		panel.add(runningIndicatorLabel);
 
+		// A label that shows the total time that the user has been logging the mouse
 		totalRuntimeLabel = new JLabel("TOTAL RUNTIME: 00:00:00");
 		totalRuntimeLabel.setBounds(0, 220, this.getWidth(), 30);
 		totalRuntimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(totalRuntimeLabel);
+
+
+		/****************************************
+		 *### MAP GENERATION MENU COMPONENTS ###*
+		 ****************************************/
+
+		// A label that tells the user how to choose what type of map to generate
+		mapTypeLabel = new JLabel("MAP TYPE:");
+		mapTypeLabel.setBounds(240, 5, 215, 30);
+		panel.add(mapTypeLabel);
+
+		// The drop down menu to pick which type of map to generate
+		mapTypeDropDown = new JComboBox();
+		for (int i = 0; i < mapTypeIndices.size(); i++) {
+			mapTypeDropDown.addItem(mapTypeIndices.get(i));
+		}
+		mapTypeDropDown.setBounds(240, 30, 215, 30);
+		panel.add(mapTypeDropDown);
+
+		// TODO
+		mapElementColorLabel = new JLabel("MAP ELEMENT COLOR:");
+		mapElementColorLabel.setBounds(240, 90, 150, 50);
+		panel.add(mapElementColorLabel);
+
+		// Create a color chooser panel component
+		colorPickerPanel = new ColorPickerPanel(Color.BLACK, mapColor);
+		colorPickerPanel.setBounds(405, 90, 50, 50);
+		colorPickerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		colorPickerPanel.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				colorPickerPanel.showDialog("Map element color");
+			}
+		});
+		panel.add(colorPickerPanel);
+
+		// The button that lets the user generate and save maps
+		doneButton = new JButton("SAVE");
+		doneButton.setBounds(300, 225, 110, 30);
+		doneButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				JFileChooser chooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG", "png");
+				chooser.setFileFilter(filter);
+				int returnVal = chooser.showSaveDialog(MLog.this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					switch (mapTypeDropDown.getSelectedIndex()) {
+					case 0:
+						mapGenerator.generateMap(getScreenResolution(), mouseLogger.getPixelTimeLog(), colorPickerPanel.getForegroundColor(), mapTypeIndices.get(0), chooser.getSelectedFile().getAbsolutePath());
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		});
+		panel.add(doneButton);
+
+		// The button to hide the map generation menu
+		backButton = new JButton("<");
+		backButton.setBounds(240, 225, 50, 30);
+		backButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				setMapSettingsVisible(false);
+				generateMapButton.setEnabled(true);
+			}
+		});
+		panel.add(backButton);
 	}
 }

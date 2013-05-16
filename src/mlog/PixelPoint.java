@@ -3,6 +3,7 @@ package mlog;
 import java.awt.Point;
 
 /**
+ * Represents a point representing a pixel on the screen.
  * 
  * @author Filip Östermark
  * @version 2013-05-11
