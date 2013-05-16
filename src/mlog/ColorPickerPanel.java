@@ -50,6 +50,11 @@ public class ColorPickerPanel extends JPanel {
 			public void paint(Graphics g) {
 				g.setColor(color);
 				g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+				g.setColor(new Color(190, 190, 190));
+				g.drawLine(0, 0, this.getWidth(), 0);
+				g.drawLine(0, 0, 0, this.getHeight());
+				g.drawLine(this.getWidth() - 1, 0, this.getWidth() - 1, this.getHeight());
+				g.drawLine(0, this.getHeight() - 1, this.getWidth(), this.getHeight() - 1);
 			}
 		}
 

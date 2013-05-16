@@ -19,7 +19,7 @@ public class MouseLogger implements Runnable {
 	private PointerInfo pointer;
 	private HashMap<PixelPoint, Integer> pixelTimeLog;
 	private volatile boolean running;
-	private volatile int totalRuntime;
+	//private volatile int totalRuntime;
 
 	private final boolean DEBUG = false;
 
@@ -55,7 +55,7 @@ public class MouseLogger implements Runnable {
 				// TODO: Catch exception
 			}
 			
-			this.totalRuntime++;
+			//this.totalRuntime++;
 		}
 	}
 
@@ -98,7 +98,22 @@ public class MouseLogger implements Runnable {
 	 * @return	The total time that the mouse has been logged.
 	 */
 	public int getTotalRuntime() {
-		return this.totalRuntime;
+		return 0;//this.totalRuntime;
+	}
+	
+	/**
+	 * The mouse logger will forget all of the logged coordinates.
+	 */
+	public void clearLog() {
+		this.pixelTimeLog.clear();
+	}
+	
+	/**
+	 * Resets the mouse logger completely.
+	 */
+	public void reset() {
+		clearLog();
+		//this.totalRuntime = 0;
 	}
 	
 	/**
