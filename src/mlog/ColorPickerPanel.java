@@ -19,7 +19,7 @@ import javax.swing.event.ChangeListener;
 /**
  * TODO
  * @author Filip Östermark
- * @version 2013-05-16
+ * @version 2013-05-27
  */
 public class ColorPickerPanel extends JPanel {
 	private JColorChooser colorChooser;
@@ -27,7 +27,7 @@ public class ColorPickerPanel extends JPanel {
 	private Color foregroundColor;
 
 	private static final long serialVersionUID = 2266828192394712927L;
-	private static final Color FRAME_COLOR = new Color(190, 190, 190);
+	private static final Color FRAME_COLOR = new Color(40, 40, 40);
 
 	/**
 	 * TODO
@@ -61,7 +61,7 @@ public class ColorPickerPanel extends JPanel {
 		final PreviewPanel colorPreview = new PreviewPanel(colorChooser);
 		colorPreview.setPreferredSize(new Dimension(40, 40));
 		colorPreview.setBackground(Color.black);
-		colorPreview.setBorder(BorderFactory.createEmptyBorder(0,0,1,0));
+		colorPreview.setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0));
 		colorChooser.setPreviewPanel(colorPreview);
 		ColorSelectionModel model = colorChooser.getSelectionModel();
 	    model.addChangeListener(new ChangeListener() {
@@ -118,17 +118,11 @@ public class ColorPickerPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		this.setBackground(this.backgroundColor);
-		MapGenerator.drawGradientDot(new PixelPoint(this.getWidth()/2, this.getHeight()/2), 30, this.foregroundColor, (Graphics2D)g);
-
-		// Draw the frame of the color chooser panel
-		this.drawFrame(g);
+		MapGenerator.drawGradientDot(new PixelPoint(this.getWidth()/2, this.getHeight()/2), 25, this.foregroundColor, (Graphics2D)g);
 	}
 
-	/**
-	 * TODO
-	 * @param g
-	 */
-	private void drawFrame(Graphics g) {
+	@Override
+	public void paintBorder(Graphics g) {
 		g.setColor(FRAME_COLOR);
 		g.drawLine(0, 0, this.getWidth(), 0);
 		g.drawLine(0, 0, 0, this.getHeight());

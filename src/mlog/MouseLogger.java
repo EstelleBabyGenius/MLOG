@@ -11,7 +11,7 @@ import java.util.Set;
  * Uses a HashMap of PixelPoints and Integers to log mouse pointer positions over time.
  * 
  * @author Filip Östermark
- * @version 2013-05-16
+ * @version 2013-05-27
  */
 public class MouseLogger implements Runnable {
 
@@ -19,7 +19,6 @@ public class MouseLogger implements Runnable {
 	private PointerInfo pointer;
 	private HashMap<PixelPoint, Integer> pixelTimeLog;
 	private volatile boolean running;
-	//private volatile int totalRuntime;
 
 	private final boolean DEBUG = false;
 
@@ -54,8 +53,6 @@ public class MouseLogger implements Runnable {
 				ie.printStackTrace();
 				// TODO: Catch exception
 			}
-			
-			//this.totalRuntime++;
 		}
 	}
 
@@ -92,13 +89,6 @@ public class MouseLogger implements Runnable {
 	 */
 	public boolean isRunning() {
 		return this.running;
-	}
-	
-	/**
-	 * @return	The total time that the mouse has been logged.
-	 */
-	public int getTotalRuntime() {
-		return 0;//this.totalRuntime;
 	}
 	
 	/**

@@ -97,7 +97,7 @@ public class MapGenerator {
 			for (int i = 0; i < pixelArray.length; i++) {
 				for (int j = i + 1; j < pixelArray.length; j++) {
 					double distance = Math.sqrt(Math.pow(pixelArray[i].getX() - pixelArray[j].getX(), 2) + Math.pow(pixelArray[i].getY() - pixelArray[j].getY(), 2));
-					int alpha = 255/((int)Math.pow(distance, 2)/10000 + 1);
+					int alpha = 255/((int)Math.pow(distance, 2)/7000 + 1);
 					if (distance < 800 && distance > 20 && alpha >= 20) {
 						pixelTimeMapImage.setColor(new Color(lineColor.getRed(), lineColor.getGreen(), lineColor.getBlue(), alpha));
 						pixelTimeMapImage.drawLine((int)pixelArray[i].getX(), (int)pixelArray[i].getY(), (int)pixelArray[j].getX(), (int)pixelArray[j].getY());
