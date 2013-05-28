@@ -34,7 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * TODO: The timer needs some fixing.
  * 
  * @author Filip Östermark
- * @version 2013-05-27
+ * @version 2013-05-28
  */
 public class MLog extends JFrame{
 
@@ -262,7 +262,8 @@ public class MLog extends JFrame{
 		resetButton = new CustomButton("RESET");
 		resetButton.setBounds(55, 150, 110, 30);
 		resetButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				mouseLogger.reset();
 				totalRuntimeLabel.setText(TOTAL_RUNTIME_LABEL + "00:00:00");
 				secondsRun = 0;

@@ -24,6 +24,7 @@ public class CustomButton extends JButton {
 	private final Color DEFAULT_BACKGROUND_COLOR = Color.DARK_GRAY;
 	private final Color ENTERED_BACKGROUND_COLOR = Color.GRAY;
 	private final Color DISABLED_BACKGROUND_COLOR = new Color(40, 40, 40);
+	private final CustomButtonUI buttonUI = new CustomButtonUI();
 
 	/**
 	 * TODO
@@ -40,6 +41,7 @@ public class CustomButton extends JButton {
 		this.setContentAreaFilled(false);
 		this.setOpaque(false);
 		this.setMargin(new Insets(5, 0, 5, 0));
+		this.setUI(this.buttonUI);
 
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
@@ -73,8 +75,10 @@ public class CustomButton extends JButton {
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
-		g.setColor(currentBackColor);
-		g.fillRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
+		if (this.isEnabled()) {
+			g.setColor(this.currentBackColor);
+			g.fillRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
+		}
 		if (this.buttonPressed && this.mouseOver) {
 			Graphics2D g2d = (Graphics2D)g;
 			GradientPaint gradient = new GradientPaint(0, 5, DEFAULT_BACKGROUND_COLOR, 0, this.getHeight() - 5, ENTERED_BACKGROUND_COLOR, true);
@@ -93,7 +97,7 @@ public class CustomButton extends JButton {
 		g.drawRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
 		g.drawRoundRect(0, 0, this.getWidth() - 1, this.getHeight() - 1, 5, 5);
 	}
-	
+
 	/**
 	 * TODO
 	 */
@@ -102,9 +106,11 @@ public class CustomButton extends JButton {
 		if (!b) {
 			this.currentBackColor = DISABLED_BACKGROUND_COLOR;
 			this.setForeground(Color.GRAY);
+			this.buttonUI.setEnabled(false);
 		} else {
 			this.currentBackColor = DEFAULT_BACKGROUND_COLOR;
 			this.setForeground(Color.WHITE);
+			this.buttonUI.setEnabled(true);
 		}
 		repaint();
 		super.setEnabled(b);
