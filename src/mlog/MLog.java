@@ -1,17 +1,16 @@
 package mlog;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,7 +59,7 @@ public class MLog extends JFrame{
 	private static JButton resetButton;
 	private static JButton saveButton;
 	private static JButton backButton;
-	private static JComboBox mapTypeDropDown;
+	private static JComboBox<String> mapTypeDropDown;
 	private static ColorPickerPanel colorPickerPanel;
 	private static JLabel mapTypeLabel;
 	private static JLabel runningIndicatorLabel;
@@ -109,7 +108,7 @@ public class MLog extends JFrame{
 	private void setLookAndFeel() {
 		try {
 			// Set cross-platform Java L&F (also called "Metal")
-	        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		} catch (Exception e) { 
 			e.printStackTrace();
 			System.err.println("The look and feel could not be set; leaving it at the default setting.");
@@ -128,6 +127,7 @@ public class MLog extends JFrame{
 		} else {
 			this.setSize(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 		}
+		repaint();
 	}
 
 	/**
@@ -284,7 +284,6 @@ public class MLog extends JFrame{
 		totalRuntimeLabel.setBounds(0, 220, this.getWidth(), 30);
 		totalRuntimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		totalRuntimeLabel.setForeground(Color.WHITE);
-		totalRuntimeLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
 		panel.add(totalRuntimeLabel);
 
 
@@ -300,20 +299,23 @@ public class MLog extends JFrame{
 		panel.add(mapTypeLabel);
 
 		// The drop down menu to pick which type of map to generate
-		mapTypeDropDown = new JComboBox();
+		mapTypeDropDown = new JComboBox<String>();
 		for (int i = 0; i < mapTypeIndices.size(); i++) {
 			mapTypeDropDown.addItem(mapTypeIndices.get(i));
 		}
 		mapTypeDropDown.setBounds(240, 30, 215, 30);
+		mapTypeDropDown.setFocusable(false);
+		mapTypeDropDown.setBackground(Color.DARK_GRAY);
+		mapTypeDropDown.setForeground(Color.WHITE);
 		panel.add(mapTypeDropDown);
 
-		// TODO
+		// A label that tells the user how to choose the color of the elements on the map
 		mapElementColorLabel = new JLabel("MAP ELEMENT COLOR:");
 		mapElementColorLabel.setBounds(240, 90, 150, 50);
 		mapElementColorLabel.setForeground(Color.WHITE);
 		mapElementColorLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
 		panel.add(mapElementColorLabel);
-		
+
 		// Create a color chooser panel component
 		colorPickerPanel = new ColorPickerPanel(Color.BLACK, mapColor);
 		colorPickerPanel.setBounds(405, 90, 50, 50);

@@ -1,13 +1,13 @@
 package mlog;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.JButton;
 
 /**
@@ -40,7 +40,6 @@ public class CustomButton extends JButton {
 		this.setContentAreaFilled(false);
 		this.setOpaque(false);
 		this.setMargin(new Insets(5, 0, 5, 0));
-		this.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
 
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
@@ -58,11 +57,13 @@ public class CustomButton extends JButton {
 			public void mousePressed(MouseEvent e) {
 				if (CustomButton.this.isEnabled()) {
 					CustomButton.this.buttonPressed = true;
+					repaint();
 				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				CustomButton.this.buttonPressed = false;
+				repaint();
 			}
 		});
 	}

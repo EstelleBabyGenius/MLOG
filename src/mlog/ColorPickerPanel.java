@@ -40,7 +40,7 @@ public class ColorPickerPanel extends JPanel {
 		this.foregroundColor = foregroundColor;
 		this.colorChooser = new JColorChooser();
 		this.colorChooser.setColor(foregroundColor);
-		
+
 		class PreviewPanel extends JComponent {
 			private static final long serialVersionUID = -1665212813721501874L;
 			private Color color;
@@ -64,22 +64,27 @@ public class ColorPickerPanel extends JPanel {
 		colorPreview.setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0));
 		colorChooser.setPreviewPanel(colorPreview);
 		ColorSelectionModel model = colorChooser.getSelectionModel();
-	    model.addChangeListener(new ChangeListener() {
-	      public void stateChanged(ChangeEvent evt) {
-	        ColorSelectionModel model = (ColorSelectionModel) evt.getSource();
-	        colorPreview.color = model.getSelectedColor();
-	      }
-	    });
-		
+		model.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				ColorSelectionModel model = (ColorSelectionModel) evt.getSource();
+				colorPreview.color = model.getSelectedColor();
+			}
+		});
+
 		AbstractColorChooserPanel panels[] = new AbstractColorChooserPanel[1];
 		AbstractColorChooserPanel[] standardPanels = colorChooser.getChooserPanels();
 		for (AbstractColorChooserPanel panel : standardPanels) {
-			if (panel.getDisplayName().equals("HSB")) {
+			if (panel.getDisplayName().equals("HSV") || panel.getDisplayName().equals("HSB")) {
 				panels[0] = panel;
 			}
 		}
-		colorChooser.setChooserPanels(panels);
-		colorChooser.setPreferredSize(new Dimension(350, 300));
+		try {
+			colorChooser.setChooserPanels(panels);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("ColorChooser panels could not be set.");
+		}
+		colorChooser.setPreferredSize(new Dimension(620, 300));
 	}
 
 	/**
