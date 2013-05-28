@@ -1,20 +1,22 @@
 package mlog;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -34,7 +36,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * TODO: The timer needs some fixing.
  * 
  * @author Filip Östermark
- * @version 2013-05-28
+ * @version 2013-05-29
  */
 public class MLog extends JFrame{
 
@@ -89,6 +91,7 @@ public class MLog extends JFrame{
 		mapTypeIndices = new HashMap<Integer, String>();
 		mapTypeIndices.put(0, MapGenerator.MAP_TYPE_DOTMAP);
 		mapTypeIndices.put(1, MapGenerator.MAP_TYPE_LINEMAP);
+		mapTypeIndices.put(2, MapGenerator.MAP_TYPE_CIRCLEMAP);
 		mapColor = STANDARD_MAP_COLOR;
 
 		initUI();
@@ -173,7 +176,7 @@ public class MLog extends JFrame{
 		/******************************
 		 *### MAIN MENU COMPONENTS ###*
 		 ******************************/
-
+		
 		this.setTitle("MLOG");
 		this.setSize(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 		this.setVisible(true);
@@ -181,6 +184,9 @@ public class MLog extends JFrame{
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLookAndFeel();
+		URL url = getClass().getResource("/res/ICON_48.png");
+		Image image = new ImageIcon(url).getImage();
+		this.setIconImage(image);
 
 		// Create a JPanel with an overridden paintComponent method.
 		// This is so that a separator can be drawn between the standard panel
@@ -351,16 +357,8 @@ public class MLog extends JFrame{
 						return;
 					}
 
-					switch (mapTypeDropDown.getSelectedIndex()) {
-					case 0:
-						mapGenerator.generateMap(getScreenResolution(), mouseLogger.getPixelTimeLog(), colorPickerPanel.getForegroundColor(), mapTypeIndices.get(0), chooser.getSelectedFile().getAbsolutePath());
-						break;
-					case 1:
-						mapGenerator.generateMap(getScreenResolution(), mouseLogger.getPixelTimeLog(), colorPickerPanel.getForegroundColor(), mapTypeIndices.get(1), chooser.getSelectedFile().getAbsolutePath());
-						break;
-					default:
-						break;
-					}
+					int index = mapTypeDropDown.getSelectedIndex();
+					mapGenerator.generateMap(getScreenResolution(), mouseLogger.getPixelTimeLog(), colorPickerPanel.getForegroundColor(), mapTypeIndices.get(index), chooser.getSelectedFile().getAbsolutePath());
 				}
 			}
 		});

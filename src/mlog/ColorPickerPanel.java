@@ -19,7 +19,7 @@ import javax.swing.event.ChangeListener;
 /**
  * TODO
  * @author Filip Östermark
- * @version 2013-05-27
+ * @version 2013-05-28
  */
 public class ColorPickerPanel extends JPanel {
 	private JColorChooser colorChooser;

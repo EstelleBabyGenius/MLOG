@@ -14,12 +14,13 @@ import javax.imageio.ImageIO;
  * Handles generation of maps from mouse coordinates over time.
  * 
  * @author Filip Östermark
- * @version 2013-05-16
+ * @version 2013-05-28
  */
 public class MapGenerator {
 
 	public final static String MAP_TYPE_DOTMAP = "DOTMAP";
 	public final static String MAP_TYPE_LINEMAP = "LINEMAP";
+	public final static String MAP_TYPE_CIRCLEMAP = "CIRCLEMAP";
 
 	/**
 	 * Standard constructor for the map generator.
@@ -41,6 +42,9 @@ public class MapGenerator {
 		}
 		else if (mapType.equals(MAP_TYPE_LINEMAP)) {
 			this.generateLineMap(resolution, pixelMap, elementColor, filePath);
+		}
+		else if (mapType.equals(MAP_TYPE_CIRCLEMAP)) {
+			this.generateCircleMap(resolution, pixelMap, elementColor, filePath);
 		} else {
 			System.err.println("Invalid map type. The map type parameter was invalid and the map could not be generated.");
 		}
@@ -109,6 +113,35 @@ public class MapGenerator {
 		this.saveImage(filePath, pixelTimeMapBuffer);
 	}
 
+	/**
+	 * Generates a dot map of mouse pointer positions over time.
+	 * 
+	 * @param resolution	The user's screen resolution
+	 * @param pixelMap		A HashMap of mouse pointer positions over time
+	 * @param dotColor		The color of the dots
+	 * @param filePath		The file path to save the image at
+	 */
+	public void generateCircleMap(Dimension resolution, HashMap<PixelPoint, Integer> pixelMap, Color dotColor, String filePath) {
+		int screenWidth = (int)resolution.getWidth();
+		int screenHeight = (int)resolution.getHeight();
+		BufferedImage pixelTimeMapBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+		Graphics2D pixelTimeMapImage = pixelTimeMapBuffer.createGraphics();
+		pixelTimeMapImage.setColor(Color.BLACK);
+		pixelTimeMapImage.fillRect(0, 0, screenWidth, screenHeight);
+		pixelTimeMapImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		// Generate all the circles on the picture
+		synchronized(pixelMap) {
+			for (PixelPoint pixel : pixelMap.keySet()) {
+				int radius = pixelMap.get(pixel);
+				pixelTimeMapImage.setColor(new Color(dotColor.getRed(), dotColor.getGreen(), dotColor.getBlue()));
+				pixelTimeMapImage.drawOval((int)(pixel.getX() - radius), (int)(pixel.getY() - radius), 2*radius, 2*radius);
+			}
+		}
+
+		this.saveImage(filePath, pixelTimeMapBuffer);
+	}
+	
 	/**
 	 * Draws a single gradient dot.
 	 * 
