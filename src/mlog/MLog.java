@@ -92,6 +92,7 @@ public class MLog extends JFrame{
 		mapTypeIndices.put(0, MapGenerator.MAP_TYPE_DOTMAP);
 		mapTypeIndices.put(1, MapGenerator.MAP_TYPE_LINEMAP);
 		mapTypeIndices.put(2, MapGenerator.MAP_TYPE_CIRCLEMAP);
+		mapTypeIndices.put(3, MapGenerator.MAP_TYPE_BARMAP);
 		mapColor = STANDARD_MAP_COLOR;
 
 		initUI();

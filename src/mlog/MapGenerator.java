@@ -21,6 +21,7 @@ public class MapGenerator {
 	public final static String MAP_TYPE_DOTMAP = "DOTMAP";
 	public final static String MAP_TYPE_LINEMAP = "LINEMAP";
 	public final static String MAP_TYPE_CIRCLEMAP = "CIRCLEMAP";
+	public final static String MAP_TYPE_BARMAP = "BARMAP";
 
 	/**
 	 * Standard constructor for the map generator.
@@ -45,6 +46,9 @@ public class MapGenerator {
 		}
 		else if (mapType.equals(MAP_TYPE_CIRCLEMAP)) {
 			this.generateCircleMap(resolution, pixelMap, elementColor, filePath);
+		}
+		else if (mapType.equals(MAP_TYPE_BARMAP)) {
+			this.generateBarMap(resolution, pixelMap, elementColor, filePath);
 		} else {
 			System.err.println("Invalid map type. The map type parameter was invalid and the map could not be generated.");
 		}
@@ -139,6 +143,55 @@ public class MapGenerator {
 			}
 		}
 
+		this.saveImage(filePath, pixelTimeMapBuffer);
+	}
+	
+	/**
+	 * Generates a bar map of mouse pointer positions over time.
+	 * 
+	 * @param resolution	The user's screen resolution
+	 * @param pixelMap		A HashMap of mouse pointer positions over time
+	 * @param barColor		The color of the bars
+	 * @param filePath		The file path to save the image at
+	 */
+	public void generateBarMap(Dimension resolution, HashMap<PixelPoint, Integer> pixelMap, Color barColor, String filePath) {
+		int screenWidth = (int)resolution.getWidth();
+		int screenHeight = (int)resolution.getHeight();
+		BufferedImage pixelTimeMapBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+		Graphics2D pixelTimeMapImage = pixelTimeMapBuffer.createGraphics();
+		pixelTimeMapImage.setColor(Color.BLACK);
+		pixelTimeMapImage.fillRect(0, 0, screenWidth, screenHeight);
+		pixelTimeMapImage.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		final int numberOfBars = 32;
+		int barWidth = screenWidth / numberOfBars;
+		int[] barHeights = new int[numberOfBars];
+		int currentBar;
+		
+		// Generate all the circles on the picture
+		synchronized(pixelMap) {
+			for (PixelPoint pixel : pixelMap.keySet()) {
+				currentBar = (int)(pixel.getX() / barWidth);
+				barHeights[currentBar] += 2*pixelMap.get(pixel);
+			}
+		}
+
+		final int barTopFade = 60; // The height of the fading at the top of the bar
+		
+		for (int i = 0; i < numberOfBars; i++) {
+			int barY = screenHeight - barHeights[i];
+			pixelTimeMapImage.setColor(new Color(barColor.getRed(), barColor.getGreen(), barColor.getBlue()));
+			pixelTimeMapImage.fillRect(i*barWidth + 1, barY + barTopFade, barWidth - 2, barHeights[i] - barTopFade);
+	
+			if (barHeights[i] != 0) {
+				for (int k = 1; k <= barTopFade; k++) {
+					int alpha = 255 - k*(255/barTopFade);
+					pixelTimeMapImage.setColor(new Color(barColor.getRed(), barColor.getGreen(), barColor.getBlue(), alpha));
+					pixelTimeMapImage.drawLine(i*barWidth + 1, barY + barTopFade - k, (i + 1)*barWidth - 2, barY + barTopFade - k);
+				}
+			}
+		}
+		
 		this.saveImage(filePath, pixelTimeMapBuffer);
 	}
 	
