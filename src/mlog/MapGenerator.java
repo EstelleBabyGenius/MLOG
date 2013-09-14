@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
  * Handles generation of maps from mouse coordinates over time.
  * 
  * @author Filip Östermark
- * @version 2013-05-28
+ * @version 2013-09-14
  */
 public class MapGenerator {
 
@@ -88,7 +88,12 @@ public class MapGenerator {
 	}
 
 	/**
-	 * TODO
+	 * Generates a line map of the mouse pointer positions over time.
+	 * 
+	 * @param resolution	The user's screen resolution
+	 * @param pixelMap		A HashMap of mouse pointer positions over time
+	 * @param lineColor		The color of the dots
+	 * @param filePath		The file path to save the image at
 	 */
 	public void generateLineMap(Dimension resolution, HashMap<PixelPoint, Integer> pixelMap, Color lineColor, String filePath) {
 		int screenWidth = (int)resolution.getWidth();
@@ -172,22 +177,27 @@ public class MapGenerator {
 		synchronized(pixelMap) {
 			for (PixelPoint pixel : pixelMap.keySet()) {
 				currentBar = (int)(pixel.getX() / barWidth);
-				barHeights[currentBar] += 2*pixelMap.get(pixel);
+				barHeights[currentBar] += pixelMap.get(pixel);
 			}
 		}
 
-		final int barTopFade = 60; // The height of the fading at the top of the bar
+		//final int barTopFade = 50; // The height of the fading at the top of the bar
 		
 		for (int i = 0; i < numberOfBars; i++) {
-			int barY = screenHeight - barHeights[i];
+			int barTopFade = 127; // Maximum safe value to use calculating alpha
+			if (barHeights[i] < 255) {
+				barTopFade = barHeights[i]/2;
+			}
+			int barYCoordinate = screenHeight - barHeights[i];
 			pixelTimeMapImage.setColor(new Color(barColor.getRed(), barColor.getGreen(), barColor.getBlue()));
-			pixelTimeMapImage.fillRect(i*barWidth + 1, barY + barTopFade, barWidth - 2, barHeights[i] - barTopFade);
+			// The + 1 and -2 constants are there to separate the bars from each other
+			pixelTimeMapImage.fillRect(i*barWidth + 1, barYCoordinate + barTopFade, barWidth - 2, barHeights[i] - barTopFade);
 	
 			if (barHeights[i] != 0) {
 				for (int k = 1; k <= barTopFade; k++) {
 					int alpha = 255 - k*(255/barTopFade);
 					pixelTimeMapImage.setColor(new Color(barColor.getRed(), barColor.getGreen(), barColor.getBlue(), alpha));
-					pixelTimeMapImage.drawLine(i*barWidth + 1, barY + barTopFade - k, (i + 1)*barWidth - 2, barY + barTopFade - k);
+					pixelTimeMapImage.drawLine(i*barWidth + 1, barYCoordinate + barTopFade - k, (i + 1)*barWidth - 2, barYCoordinate + barTopFade - k);
 				}
 			}
 		}
@@ -213,9 +223,10 @@ public class MapGenerator {
 	}
 
 	/**
-	 * TODO
-	 * @param filePath
-	 * @param image
+	 * Saves the image at the given file path.
+	 * 
+	 * @param filePath	The file path to save the image at
+	 * @param image		The image to save
 	 */
 	private void saveImage(String filePath, BufferedImage bufferedImage) {
 		try {
@@ -225,7 +236,7 @@ public class MapGenerator {
 			ImageIO.write(bufferedImage, "png", new File(filePath));
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("The map could not be saved. Try specifying another path to save to.");
+			System.err.println("The map could not be saved. Try specifying another path to save at.");
 		}
 	}
 }

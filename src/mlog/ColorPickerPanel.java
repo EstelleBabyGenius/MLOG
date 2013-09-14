@@ -17,9 +17,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * TODO
+ * A custom Swing component that allows the user to pick a color with a graphic preview of the color selected.
+ * 
  * @author Filip Östermark
- * @version 2013-05-28
+ * @version 2013-09-14
  */
 public class ColorPickerPanel extends JPanel {
 	private JColorChooser colorChooser;
@@ -30,9 +31,10 @@ public class ColorPickerPanel extends JPanel {
 	private static final Color FRAME_COLOR = new Color(40, 40, 40);
 
 	/**
-	 * TODO
-	 * @param backgroundColor
-	 * @param foregroundColor
+	 * Creates a new ColorPickerPanel with the given background color and foreground color.
+	 * 
+	 * @param backgroundColor	The color of the background in the ColorPickerPanel
+	 * @param foregroundColor	The color of the foreground in the ColorPickerPanel
 	 */
 	public ColorPickerPanel(Color backgroundColor, Color foregroundColor) {
 		super();
@@ -50,11 +52,6 @@ public class ColorPickerPanel extends JPanel {
 			public void paint(Graphics g) {
 				g.setColor(color);
 				g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-				g.setColor(new Color(190, 190, 190));
-				g.drawLine(0, 0, this.getWidth(), 0);
-				g.drawLine(0, 0, 0, this.getHeight());
-				g.drawLine(this.getWidth() - 1, 0, this.getWidth() - 1, this.getHeight());
-				g.drawLine(0, this.getHeight() - 1, this.getWidth(), this.getHeight() - 1);
 			}
 		}
 
@@ -88,10 +85,9 @@ public class ColorPickerPanel extends JPanel {
 	}
 
 	/**
-	 * TODO
-	 * @param parent
-	 * @param title
-	 * @return
+	 * Shows the color chooser panel when the ColorPickerPanel is clicked.
+	 * 
+	 * @param title	The title shown at the top of the color dialog
 	 */
 	public void showDialog(String title) {
 		ActionListener okListener = new ActionListener() {
@@ -112,13 +108,16 @@ public class ColorPickerPanel extends JPanel {
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * @return The foreground color of the ColorPickerPanel.
 	 */
 	public Color getForegroundColor() {
 		return this.foregroundColor;
 	}
 
+	/**
+	 * Overrides the paintComponent method of the Swing library's JPanel.
+	 * Called with the same parameter.
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -126,6 +125,9 @@ public class ColorPickerPanel extends JPanel {
 		MapGenerator.drawGradientDot(new PixelPoint(this.getWidth()/2, this.getHeight()/2), 25, this.foregroundColor, (Graphics2D)g);
 	}
 
+	/**
+	 * Paints the border around the ColorPickerPanel.
+	 */
 	@Override
 	public void paintBorder(Graphics g) {
 		g.setColor(FRAME_COLOR);

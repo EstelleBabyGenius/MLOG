@@ -11,7 +11,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 
 /**
- * TODO
+ * A custom Java Swing JButton with new looks. The functionality is basically the same.
+ * 
  * @author Filip Östermark
  * @version 2013-05-28
  */
@@ -27,8 +28,9 @@ public class CustomButton extends JButton {
 	private final CustomButtonUI buttonUI = new CustomButtonUI();
 
 	/**
-	 * TODO
-	 * @param label
+	 * Creates a new CustomButton with the given label painted on it.
+	 * 
+	 * @param label	The text on the button
 	 */
 	public CustomButton(String label) {
 		super(label);
@@ -43,6 +45,7 @@ public class CustomButton extends JButton {
 		this.setMargin(new Insets(5, 0, 5, 0));
 		this.setUI(this.buttonUI);
 
+		// Handle mouse input
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
 				if (CustomButton.this.isEnabled()) {
@@ -71,7 +74,7 @@ public class CustomButton extends JButton {
 	}
 
 	/**
-	 * TODO
+	 * Custom paint method for the Swing JButton.
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
@@ -89,7 +92,7 @@ public class CustomButton extends JButton {
 	}
 
 	/**
-	 * TODO
+	 * Paints the border of the CustomButton.
 	 */
 	@Override
 	public void paintBorder(Graphics g) {
@@ -99,7 +102,9 @@ public class CustomButton extends JButton {
 	}
 
 	/**
-	 * TODO
+	 * Enables or disabled the CustomButton.
+	 * 
+	 * @param b	The button is enabled if b is true, disabled if not
 	 */
 	@Override
 	public void setEnabled(boolean b) {

@@ -10,7 +10,7 @@ import javax.swing.AbstractButton;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
- * TODO
+ * A custom look for the Java Swing JButton.
  * 
  * @author Filip Östermark
  * @version 2013-05-28
@@ -20,12 +20,18 @@ public class CustomButtonUI extends BasicButtonUI {
 	private Font font;
 	private boolean enabled;
 	
+	/**
+	 * Creates a new CustomButtonUI.
+	 */
 	public CustomButtonUI() {
 		super();
 		this.font = new Font(Font.DIALOG, Font.BOLD, 12);
 		this.enabled = true;
 	}
 	
+	/**
+	 * Paints the text on the button.
+	 */
     @Override
     protected void paintText(Graphics g, AbstractButton b, Rectangle textRect, String text) {
     	Graphics2D g2d = (Graphics2D) g;
@@ -39,6 +45,11 @@ public class CustomButtonUI extends BasicButtonUI {
     	g2d.drawString(text, (int)textRect.getX(), (int)textRect.getY() + 13);
     }
     
+    /**
+     * Custom enabling method for the button.
+     * 
+     * @param b	The button is enabled if b is true, false if not
+     */
     public void setEnabled(boolean b) {
     	this.enabled = b;
     }

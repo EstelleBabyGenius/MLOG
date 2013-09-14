@@ -36,7 +36,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * TODO: The timer needs some fixing.
  * 
  * @author Filip Östermark
- * @version 2013-05-29
+ * @version 2013-09-13
  */
 public class MLog extends JFrame{
 
